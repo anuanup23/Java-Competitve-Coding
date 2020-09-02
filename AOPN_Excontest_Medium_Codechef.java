@@ -1,71 +1,77 @@
 import java.io.*;
-import java.util.*;
+import java.util.InputMismatchException;
 public class Main {
 	 public static void main(String[] args) throws Exception {
 	        InputReader in = new InputReader(System.in);
 	        OutputWriter out = new OutputWriter(System.out);
-			Task Solver = new Task();
 			int t = in.readInt();
-			while(t-- > 0)
+			Task Solver = new Task();
+			while(t-- > 0){
 				Solver.solve(in,out);
-			out.close();
+			}
+			out.close(); 
 	 }
 }
 class Task{
-	int n;
-	long arr[] = new long[10];
-	final long M = 1000000007;
-	long dp[][][] = new long [33][(1 << 6)][(1 << 6)];
-	public void solve(InputReader in, OutputWriter out) {
-		n = in.readInt();
-		for(int i = 0; i < n; ++i) arr[i] = in.readInt();
-		for(int i = 0; i < 33; ++i) {
-			for(int j = 0; j < (1 << 6); ++j) {
-				for(int k = 0; k < (1 << 6); ++k){
-				    dp[i][j][k] = -1;
+	String a;
+	long ans;
+	long dp[][][][][][][]; 
+	public void solve(InputReader in, OutputWriter out){
+		dp =  new long [2][2][2][2][11][11][20];
+		ans = 0;
+		a = in.readString();
+		for(int i = 0; i < 2; ++i) {
+			for(int j = 0; j < 2; ++j) {
+				for(int k = 0; k < 2; ++k) {
+					for(int l = 0; l < 2; ++l) {
+						for(int m = 0; m < 11; ++m) {
+							for(int n = 0; n < 11; ++n) {
+								for(int o = 0; o < 20; ++o) dp[i][j][k][l][m][n][o] = -1;
+							}
+						}
+					}
 				}
 			}
 		}
-		out.printLine(recur(0, (1 << (n - 1)) - 1, (1 << (n - 1)) - 1));
-	}
-	private long recur(int pos, int bt, int xt) {
-		if(pos == 31) return 1;
-		if(dp[pos][bt][xt] != -1) return dp[pos][bt][xt];
-		long ret = 0;
-		int  a = 0;
-		for(int i = 0; i < n; ++i) 
-			if((arr[i] & (1 << (30 - pos))) != 0)
-				a |= (1 << i);
-		for(int xr = 0; xr < (1 << n); ++xr) {
-			int b = a ^ xr;
-			boolean possible = true;
-			int currentBit = 0, previousBit = 0, new_bt = 0, new_xt = 0;
-			for(int j = n - 1; j >= 0; j--) {
-				currentBit = ((b & (1 << j)) == 0) ? 0 : 1;
-				if((bt & (1 << j)) != 0) {
-					if(previousBit < currentBit) {
-						possible = false;
+		ans -= recur(0,0,1,0,0,10,10);
+		a = in.readString();
+		for(int i = 0; i < 2; ++i) {
+			for(int j = 0; j < 2; ++j) {
+				for(int k = 0; k < 2; ++k) {
+					for(int l = 0; l < 2; ++l) {
+						for(int m = 0; m < 11; ++m) {
+							for(int n = 0; n < 11; ++n) {
+								for(int o = 0; o < 20; ++o) dp[i][j][k][l][m][n][o] = -1;
+							}
+						}
 					}
-					if(currentBit == previousBit) new_bt |= (1 << j);
 				}
-				previousBit = currentBit;
-			}
-			for(int j = n - 1; j >= 0; j--) {
-				currentBit = ((xr & (1 << j)) == 0) ? 0 : 1;
-				if((xt & (1 << j)) != 0) {
-					if(previousBit < currentBit) {
-						possible = false;
-					}
-					if(currentBit == previousBit) new_xt |= (1 << j);
-				}
-				previousBit = currentBit;
-			}
-			if(possible == true) {
-				ret = (ret % M + (recur(pos + 1, new_bt, new_xt)) % M) % M;
 			}
 		}
-		return dp[pos][bt][xt] = ret;
+		ans += recur(0,0,1,0,0,10,10);
+		out.printLine(ans);
 	}
+		private long recur(int pos, int start, int rb, int even, int odd, int last, int slast) {
+			if(pos == a.length()) {
+				if(odd == 1 && even == 1 && start == 1) return 1;
+				else return 0;
+			}
+			if(dp[start][rb][even][odd][last][slast][pos] != -1) return dp[start][rb][even][odd][last][slast][pos];
+			int e = (rb == 1)? a.charAt(pos) - '0' : 9;
+			long ret = 0;
+			if(start == 0) {
+				ret += recur(pos + 1, 0, (rb & ((a.charAt(pos) == '0') ? 1 : 0)), 0, 0, last, slast);
+				for(int i = 1; i <= e; ++i) 
+					ret += recur(pos + 1, 1,(rb & ((e == i) ? 1 : 0)), 0, 0, i, last);
+				
+			}
+			else {
+				for(int i = 0; i <= e; ++i) {
+					ret += recur(pos + 1, 1, (rb & ((i == e) ? 1 : 0)), (even | ((i == last) ? 1 : 0)), (odd | ((i == slast) ? 1 : 0)), i, last);
+				}
+			}
+			return dp[start][rb][even][odd][last][slast][pos] = ret;
+		}
 }
 class InputReader {
 	private InputStream stream;
