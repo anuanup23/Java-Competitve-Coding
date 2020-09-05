@@ -1,3 +1,6 @@
+PROBLEM URL   https://www.codechef.com/FLPAST01/problems/BADMATH
+
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
