@@ -1,4 +1,4 @@
-PROBLEM URL   https://www.codechef.com/FLPAST01/problems/BADMATH
+//PROBLEM URL   https://www.codechef.com/FLPAST01/problems/BADMATH
 
 
 import java.io.*;
